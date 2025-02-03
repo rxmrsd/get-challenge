@@ -38,12 +38,13 @@ class _CardGameScreenState extends State<CardGameScreen> {
     if (revealed[index]) return;
 
     setState(() {
-      revealed[index] = true;
+      // 全てのカードを表にする
+      revealed = List.filled(5, true);
       attempts++;
       
       if (index == winningCardIndex) {
         showResultDialog('Success!');
-      } else if (attempts >= 3) {
+      } else {
         showResultDialog('Game Over');
       }
     });
@@ -52,6 +53,7 @@ class _CardGameScreenState extends State<CardGameScreen> {
   void showResultDialog(String message) {
     showDialog(
       context: context,
+      barrierDismissible: false, // 背景タップでダイアログを閉じないように
       builder: (ctx) => AlertDialog(
         title: Text(message),
         actions: [
@@ -71,38 +73,69 @@ class _CardGameScreenState extends State<CardGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Card Game')),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              padding: EdgeInsets.all(20),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 5,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-              ),
-              itemBuilder: (ctx, index) => GestureDetector(
-                onTap: () => handleCardTap(index),
-                child: Card(
-                  color: revealed[index]
-                      ? (index == winningCardIndex ? Colors.green : Colors.red)
-                      : Colors.blue,
-                  child: Center(
-                    child: revealed[index]
-                        ? Text(index == winningCardIndex ? 'WIN' : 'LOSE')
-                        : Icon(Icons.question_mark),
-                  ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 上段の3枚
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(3, (index) => _buildCard(index)),
+                    ),
+                    SizedBox(height: 16), // 上下の行間
+                    // 下段の2枚
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(2, (index) => _buildCard(index + 3)),
+                    ),
+                  ],
                 ),
               ),
-              itemCount: 5,
+            ),
+            Text('Attempts: $attempts'),
+            ElevatedButton(
+              onPressed: initializeGame,
+              child: Text('Reset Game'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(int index) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: 100,
+        height: 140,
+        child: GestureDetector(
+          onTap: () => handleCardTap(index),
+          child: Card(
+            elevation: 5,
+            color: revealed[index] ? Colors.white : Colors.blue,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: revealed[index]
+                  ? (index == winningCardIndex 
+                      ? Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          child: Image.asset(
+                            'assets/images/pika.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Center(child: Text('LOSE')))
+                  : Center(child: Icon(Icons.question_mark)),
             ),
           ),
-          Text('Attempts: $attempts'),
-          ElevatedButton(
-            onPressed: initializeGame,
-            child: Text('Reset Game'),
-          ),
-        ],
+        ),
       ),
     );
   }
