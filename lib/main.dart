@@ -15,31 +15,61 @@ class CardGameScreen extends StatefulWidget {
   _CardGameScreenState createState() => _CardGameScreenState();
 }
 
-class _CardGameScreenState extends State<CardGameScreen> {
+class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProviderStateMixin {
   int? winningCardIndex;
   int attempts = 0;
   List<bool> revealed = List.generate(5, (_) => false);
   bool isGameOver = false;
-  int? selectedCardIndex;  // 追加: 選択したカードのインデックスを保存
+  int? selectedCardIndex;
+  late AnimationController _controller;
+  List<Animation<double>> _animations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // 各カードのアニメーションを作成
+    for (int i = 0; i < 5; i++) {
+      _animations.add(Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(0.0, 1.0, curve: Curves.easeInOut),
+        ),
+      ));
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void initializeGame() {
+    _controller.reset();  // アニメーションをリセット
     setState(() {
       winningCardIndex = Random().nextInt(5);
       revealed = List.filled(5, false);
       attempts = 0;
       isGameOver = false;
-      selectedCardIndex = null;  // 追加: 選択カードをリセット
+      selectedCardIndex = null;
     });
   }
 
   void handleCardTap(int index) {
     if (revealed[index] || isGameOver) return;
 
-    setState(() {
-      revealed = List.filled(5, true);
-      attempts++;
-      isGameOver = true;
-      selectedCardIndex = index;  // 追加: 選択したカードを記録
+    selectedCardIndex = index;
+    _controller.forward().then((_) {
+      setState(() {
+        revealed = List.filled(5, true);
+        attempts++;
+        isGameOver = true;
+      });
     });
   }
 
@@ -87,60 +117,77 @@ class _CardGameScreenState extends State<CardGameScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        width: 95,
+        width: 100,
         height: 140,
         child: GestureDetector(
           onTap: () => handleCardTap(index),
-          child: Card(
-            elevation: 5,
-            color: revealed[index] ? Colors.white : Colors.blue,
-            child: Stack(  // 追加: Stackを使用してGETマークを重ねる
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: revealed[index]
-                      ? (index == winningCardIndex 
-                          ? Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              child: Image.asset(
-                                'assets/images/pika.jpg',
-                                fit: BoxFit.cover,
+          child: AnimatedBuilder(
+            animation: _animations[index],
+            builder: (context, child) {
+              final angle = _animations[index].value * pi;
+              return Transform(
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.001)
+                  ..rotateY(angle),
+                alignment: Alignment.center,
+                child: Card(
+                  elevation: 5,
+                  color: revealed[index] ? Colors.white : Colors.blue,
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: angle < pi / 2
+                            ? Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                child: Image.asset(
+                                  'assets/images/ball.jpg',
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Transform(
+                                transform: Matrix4.identity()..rotateY(pi),
+                                alignment: Alignment.center,
+                                child: revealed[index]
+                                    ? (index == winningCardIndex 
+                                        ? Container(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            child: Image.asset(
+                                              'assets/images/pika.jpg',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : Center(child: Text('×')))
+                                    : Container(),
                               ),
-                            )
-                          : Center(child: Text('×')))
-                      : Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          child: Image.asset(
-                            'assets/images/ball.jpg',  // 裏面の画像
-                            fit: BoxFit.cover,
+                      ),
+                      if (revealed[index] && index == selectedCardIndex)
+                        Positioned(
+                          left: 5,
+                          top: 5,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'GET',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                ),
-                // 追加: 選択したカードが当たりの場合にGETマークを表示
-                if (revealed[index] && index == selectedCardIndex)
-                  Positioned(
-                    left: 5,
-                    top: 5,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'GET',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
