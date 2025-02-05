@@ -103,11 +103,15 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
                 ),
               ),
             ),
-            if (isGameOver)  // 追加: ゲーム終了時のみRetryボタンを表示
-              ElevatedButton(
-                onPressed: initializeGame,
-                child: Text('Retry'),
-              ),
+            Container(  // 追加: ボタン用の固定高さのコンテナ
+              height: 48,  // ボタンの高さ分のスペースを確保
+              child: isGameOver
+                ? ElevatedButton(
+                    onPressed: initializeGame,
+                    child: Text('Retry'),
+                  )
+                : null,  // ゲーム中は何も表示しない
+            ),
             SizedBox(height: 16),
           ],
         ),
