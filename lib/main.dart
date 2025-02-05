@@ -27,6 +27,8 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    winningCardIndex = Random().nextInt(5);
+
     _controller = AnimationController(
       duration: Duration(milliseconds: 500),
       vsync: this,
@@ -76,7 +78,7 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Card Game')),
+      appBar: AppBar(title: Text('Get Challenge!!')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -117,7 +119,7 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        width: 100,
+        width: 95,
         height: 140,
         child: GestureDetector(
           onTap: () => handleCardTap(index),
@@ -132,7 +134,7 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
                 alignment: Alignment.center,
                 child: Card(
                   elevation: 5,
-                  color: revealed[index] ? Colors.white : Colors.blue,
+                  color: Colors.white,
                   child: Stack(
                     children: [
                       ClipRRect(
@@ -149,36 +151,46 @@ class _CardGameScreenState extends State<CardGameScreen> with SingleTickerProvid
                             : Transform(
                                 transform: Matrix4.identity()..rotateY(pi),
                                 alignment: Alignment.center,
-                                child: revealed[index]
-                                    ? (index == winningCardIndex 
-                                        ? Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            child: Image.asset(
-                                              'assets/images/pika.jpg',
-                                              fit: BoxFit.cover,
-                                            ),
-                                          )
-                                        : Center(child: Text('×')))
-                                    : Container(),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  child: index == winningCardIndex 
+                                    ? Image.asset(
+                                        'assets/images/pika.jpg',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          '×',
+                                          style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                ),
                               ),
                       ),
                       if (revealed[index] && index == selectedCardIndex)
                         Positioned(
-                          left: 5,
+                          right: 5,
                           top: 5,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'GET',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                          child: Transform(
+                            transform: Matrix4.identity()..rotateY(-angle),
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'GET',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
