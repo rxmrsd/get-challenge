@@ -40,11 +40,55 @@ class CardGameScreenState extends State<CardGameScreen> {
     });
   }
 
-  @override
+  // リセット処理を行うメソッドを追加
+  void resetStats() {
+    setState(() {
+      attempts = 0;
+      wins = 0;
+      gameResults.clear();
+    });
+  }
+
+  // 確認ダイアログを表示するメソッドを追加
+  Future<void> showResetConfirmation() async {
+    final bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('統計のリセット'),
+          content: const Text('すべての記録をリセットしますか？\nこの操作は取り消せません。'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('キャンセル'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('リセット'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true) {
+      resetStats();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Get Challenge!!')),
+      appBar: AppBar(
+        title: const Text('Get Challenge!!'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: showResetConfirmation,
+            tooltip: '統計をリセット',
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
