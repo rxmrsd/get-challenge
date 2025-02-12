@@ -3,7 +3,7 @@ import 'dart:math';
 import 'game_card.dart';
 
 class CardGrid extends StatefulWidget {
-  final Function onGameOver;
+  final Function(int selectedIndex, int winningIndex) onGameOver;  // 型を変更
   final bool isGameOver;
 
   const CardGrid({
@@ -69,7 +69,7 @@ class CardGridState extends State<CardGrid> with SingleTickerProviderStateMixin 
       setState(() {
         revealed = List.filled(5, true);
         _isAnimating = false;
-        widget.onGameOver();
+        widget.onGameOver(index, winningCardIndex!);  // パラメータを追加
       });
     });
   }
