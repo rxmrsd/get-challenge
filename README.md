@@ -1,16 +1,39 @@
-# lucky_grab
+# はじめに
 
-A new Flutter project.
+ポケポケゲットチャレンジの練習スペースをFlutterで作成しました。Flutterに関する知識が皆無である私が、開発にはCursorとClaude-3.5-sonnetを活用することで、短時間で実装することができました。本記事では、その過程を簡単に紹介します。
 
-## Getting Started
+:::note warn
+本記事で紹介するアプリは、あくまで個人利用を目的として作成したものです。
+:::
 
-This project is a starting point for a Flutter application.
+:::note info
+[ゲットチャレンジとは]((https://www.pokemontcgpocket.com/ja/howtoplay/card/))
 
-A few resources to get you started if this is your first Flutter project:
+*「ゲットチャレンジ」では、他のプレイヤーが開封したパックに入っていたものと同じカードをランダムで1枚ゲットできます。一覧からお目当てのカードを引いたプレイヤーがいないか探してみましょう。また、イベント中に登場するチャレンジもあるので、見逃さないようにしましょう。*
+:::
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# お題
+
+Flutterを用いて、ポケポケゲットチャレンジを再現できる練習スペースを作成することを目標としました。具体的には、以下の要件を満たすものを作りました。
+
+- UI はシンプルで直感的に操作できる
+- 画面上の要素がアニメーションする
+- クリックやスワイプでインタラクション可能
+- リアルタイムなスコア表示
+
+# 結果
+
+CursorとClaudeを活用することで、開発効率を大幅に向上させることができました。
+Flutterの組み込みウィジェットを活用し、アニメーションやインタラクションを実装しました。アプリは直感的に遊べるUIとなり、スムーズな動作を実現できました。
+
+<img width=25%><img width=50% alt="intro.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3618319/bb11e157-4b18-4ffa-b7ad-2d76addf2df3.gif">
+
+# まとめ
+
+CursorとClaudeを活用することで、短期間でポケポケゲットチャレンジの練習スペースを開発できました。Flutterの強力なウィジェットと、開発支援ツールの組み合わせが非常に有効でした。これを用いれば、本家のチャレンジ前に練習でき、自分の運の良さ(悪さ)も図ることができます。今後は、スコアの可視化機能や成功体験モード(必ず当たるモード)の実装を検討したいと思います。
+ソースコードは[こちら](https://github.com/rxmrsd/get-challenge)。
+
+# 参考
+
+- [Pokémon Trading Card Game Pocket（ポケポケ）](https://www.pokemontcgpocket.com/ja/)
