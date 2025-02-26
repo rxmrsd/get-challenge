@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../widgets/card_grid.dart';
 import '../widgets/retry_button.dart';
 
@@ -13,7 +14,7 @@ class CardGameScreenState extends State<CardGameScreen> {
   bool isGameOver = false;
   int attempts = 0;
 
-  void handleGameOver() {
+  void handleGameOver(int score, int totalMoves) {
     setState(() {
       isGameOver = true;
       attempts++;
